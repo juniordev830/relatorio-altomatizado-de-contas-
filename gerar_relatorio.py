@@ -17,6 +17,8 @@ O script gera "relatorio.html" na mesma pasta, com resumo estatístico e gráfic
 """
 
 import pandas as pd
+import argparse
+from html import escape
 import matplotlib
 matplotlib.use("Agg")  # não precisa de interface gráfica
 import matplotlib.pyplot as plt
@@ -43,8 +45,17 @@ def carregar_dados(caminho: str, aba) -> pd.DataFrame:
     """Lê a planilha e faz limpeza básica."""
     df = pd.read_excel(caminho, sheet_name=aba)
 
+    required = [column for column in (COLUNA_CATEGORIA, COLUNA_VALOR) if column]
+    missing = [column for column in required if column not in df.columns]
+    if missing:
+        raise ValueError(f"Colunas obrigatórias ausentes: {', '.join(missing)}")
+
     # remove linhas totalmente vazias
     df = df.dropna(how="all")
+    df[COLUNA_VALOR] = pd.to_numeric(df[COLUNA_VALOR], errors="coerce")
+    df = df.dropna(subset=[COLUNA_CATEGORIA, COLUNA_VALOR])
+    if df.empty:
+        raise ValueError("A planilha não possui registros válidos após a limpeza.")
 
     # converte a coluna de data, se existir
     if COLUNA_DATA and COLUNA_DATA in df.columns:
@@ -153,7 +164,7 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
 </head>
 <body>
     <h1>Relatório de Dados</h1>
-    <p>Gerado a partir de <b>{ARQUIVO_ENTRADA}</b> em {datetime.now().strftime('%d/%m/%Y %H:%M')}</p>
+    <p>Gerado a partir de <b>{escape(ARQUIVO_ENTRADA)}</b> em {datetime.now().strftime('%d/%m/%Y %H:%M')}</p>
 
     <div class="cards">
         <div class="card"><div class="valor">{total:,.2f}</div><div class="label">Total ({COLUNA_VALOR})</div></div>
@@ -174,13 +185,20 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
 
 
 def main():
-    caminho = Path(ARQUIVO_ENTRADA)
+    parser = argparse.ArgumentParser(description="Gera um relatório HTML a partir de uma planilha Excel.")
+    parser.add_argument("arquivo", nargs="?", default=ARQUIVO_ENTRADA, help="Caminho do arquivo .xlsx")
+    parser.add_argument("--saida", default=ARQUIVO_SAIDA, help="Caminho do HTML gerado")
+    args = parser.parse_args()
+
+    caminho = Path(args.arquivo)
     if not caminho.exists():
-        print(f"Arquivo não encontrado: {ARQUIVO_ENTRADA}")
-        return
+        parser.error(f"Arquivo não encontrado: {caminho}")
 
     print(f"Lendo {ARQUIVO_ENTRADA} ...")
-    df = carregar_dados(str(caminho), ABA)
+    try:
+        df = carregar_dados(str(caminho), ABA)
+    except ValueError as error:
+        parser.error(str(error))
     print(f"{len(df)} linhas carregadas.")
 
     print("Gerando gráficos...")
@@ -193,8 +211,8 @@ def main():
     print("Montando relatório...")
     html = montar_html(df, imgs)
 
-    Path(ARQUIVO_SAIDA).write_text(html, encoding="utf-8")
-    print(f"Relatório salvo em: {ARQUIVO_SAIDA}")
+    Path(args.saida).write_text(html, encoding="utf-8")
+    print(f"Relatório salvo em: {args.saida}")
 
 
 if __name__ == "__main__":
