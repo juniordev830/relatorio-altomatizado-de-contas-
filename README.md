@@ -5,7 +5,7 @@ Gera um relatório HTML com indicadores, gráficos e tabela-resumo a partir de u
 ## Como executar
 
 ```bash
-python -m pip install pandas openpyxl matplotlib
+python -m pip install -r requirements.txt
 python gerar_relatorio.py vendas_exemplo.xlsx --saida relatorio.html
 ```
 
