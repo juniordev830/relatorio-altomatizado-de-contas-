@@ -170,7 +170,7 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
         <div class="card"><div class="valor">{total:,.2f}</div><div class="label">Total ({COLUNA_VALOR})</div></div>
         <div class="card"><div class="valor">{media:,.2f}</div><div class="label">Média ({COLUNA_VALOR})</div></div>
         <div class="card"><div class="valor">{qtd_registros}</div><div class="label">Registros</div></div>
-        <div class="card"><div class="valor">{top_categoria}</div><div class="label">Top {COLUNA_CATEGORIA}</div></div>
+        <div class="card"><div class="valor">{escape(str(top_categoria))}</div><div class="label">Top {escape(COLUNA_CATEGORIA)}</div></div>
     </div>
 
     {blocos_grafico}
@@ -194,7 +194,7 @@ def main():
     if not caminho.exists():
         parser.error(f"Arquivo não encontrado: {caminho}")
 
-    print(f"Lendo {ARQUIVO_ENTRADA} ...")
+    print(f"Lendo {caminho} ...")
     try:
         df = carregar_dados(str(caminho), ABA)
     except ValueError as error:
