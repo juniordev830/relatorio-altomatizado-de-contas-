@@ -16,6 +16,7 @@ COMO USAR
 O script gera "relatorio.html" na mesma pasta, com resumo estatístico e gráficos.
 """
 
+import math
 import pandas as pd
 import argparse
 from html import escape
@@ -54,6 +55,8 @@ def carregar_dados(caminho: str, aba) -> pd.DataFrame:
     df = df.dropna(how="all")
     df[COLUNA_VALOR] = pd.to_numeric(df[COLUNA_VALOR], errors="coerce")
     df = df.dropna(subset=[COLUNA_CATEGORIA, COLUNA_VALOR])
+    # Exclude +/- infinity: these values survive dropna and corrupt totals/charts.
+    df = df[df[COLUNA_VALOR].map(math.isfinite)]
     if df.empty:
         raise ValueError("A planilha não possui registros válidos após a limpeza.")
 

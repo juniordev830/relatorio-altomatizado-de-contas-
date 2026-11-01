@@ -16,3 +16,30 @@ def test_report_escapes_untrusted_category_values():
     assert "<script>alert" not in html
     assert "&lt;script&gt;" in html
     assert "&lt;/script&gt;" in html
+
+
+
+def test_load_data_discards_non_finite_amounts(monkeypatch):
+    import gerar_relatorio
+
+    frame = pd.DataFrame({
+        "Produto": ["válido", "infinito", "negativo infinito", "ausente"],
+        "Total": [12.5, float("inf"), float("-inf"), None],
+    })
+    monkeypatch.setattr(gerar_relatorio.pd, "read_excel", lambda *args, **kwargs: frame.copy())
+
+    result = gerar_relatorio.carregar_dados("ignored.xlsx", 0)
+
+    assert result["Produto"].tolist() == ["válido"]
+    assert result["Total"].tolist() == [12.5]
+
+
+def test_load_data_rejects_only_non_finite_amounts(monkeypatch):
+    import pytest
+    import gerar_relatorio
+
+    frame = pd.DataFrame({"Produto": ["infinito"], "Total": [float("inf")]})
+    monkeypatch.setattr(gerar_relatorio.pd, "read_excel", lambda *args, **kwargs: frame.copy())
+
+    with pytest.raises(ValueError, match="não possui registros válidos"):
+        gerar_relatorio.carregar_dados("ignored.xlsx", 0)
