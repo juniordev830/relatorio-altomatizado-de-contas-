@@ -95,6 +95,8 @@ def grafico_temporal(df: pd.DataFrame) -> str | None:
     if not COLUNA_DATA or COLUNA_DATA not in df.columns:
         return None
 
+    if df[COLUNA_DATA].notna().sum() == 0:
+        return None
     serie = df.groupby(pd.Grouper(key=COLUNA_DATA, freq="MS"))[COLUNA_VALOR].sum()
 
     fig, ax = plt.subplots(figsize=(8, 4.5))
@@ -111,7 +113,12 @@ def grafico_pizza(df: pd.DataFrame) -> str:
     resumo = df.groupby(COLUNA_CATEGORIA)[COLUNA_VALOR].sum().sort_values(ascending=False)
 
     fig, ax = plt.subplots(figsize=(6, 6))
-    ax.pie(resumo, labels=resumo.index, autopct="%1.1f%%", startangle=90)
+    if (resumo < 0).any() or resumo.sum() <= 0:
+        ax.text(0.5, 0.5, "Participação indisponível: totais negativos ou soma zero.",
+                ha="center", va="center", wrap=True, transform=ax.transAxes)
+        ax.axis("off")
+    else:
+        ax.pie(resumo, labels=resumo.index, autopct="%1.1f%%", startangle=90)
     ax.set_title(f"Participação de {COLUNA_VALOR} por {COLUNA_CATEGORIA}")
     plt.tight_layout()
     return fig_para_base64(fig)
