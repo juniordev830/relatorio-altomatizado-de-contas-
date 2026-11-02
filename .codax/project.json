@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "project_kind": "Gerador de relatórios Python / Excel",
+  "entry_points": [
+    "gerar_relatorio.py",
+    "tests/test_gerar_relatorio.py"
+  ],
+  "test_commands": [
+    "pytest -q"
+  ],
+  "review_focus": [
+    "Validação de colunas e dados da planilha",
+    "Escape de conteúdo em relatórios HTML"
+  ]
+}
