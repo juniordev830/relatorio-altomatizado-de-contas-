@@ -43,3 +43,10 @@ def test_load_data_rejects_only_non_finite_amounts(monkeypatch):
 
     with pytest.raises(ValueError, match="não possui registros válidos"):
         gerar_relatorio.carregar_dados("ignored.xlsx", 0)
+
+
+def test_parse_sheet_selector():
+    import gerar_relatorio
+
+    assert gerar_relatorio.parse_aba("2") == 2
+    assert gerar_relatorio.parse_aba("Vendas") == "Vendas"

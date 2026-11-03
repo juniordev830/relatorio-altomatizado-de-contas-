@@ -124,6 +124,14 @@ def grafico_pizza(df: pd.DataFrame) -> str:
     return fig_para_base64(fig)
 
 
+def parse_aba(value: str):
+    """Converte o seletor da aba para índice inteiro ou nome literal."""
+    try:
+        return int(value)
+    except ValueError:
+        return value
+
+
 def montar_html(df: pd.DataFrame, imgs: dict) -> str:
     """Monta o relatório HTML final."""
     total = df[COLUNA_VALOR].sum()
@@ -197,6 +205,7 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Gera um relatório HTML a partir de uma planilha Excel.")
     parser.add_argument("arquivo", nargs="?", default=ARQUIVO_ENTRADA, help="Caminho do arquivo .xlsx")
+    parser.add_argument("--aba", type=parse_aba, default=ABA, help="Índice (0-based) ou nome da aba")
     parser.add_argument("--saida", default=ARQUIVO_SAIDA, help="Caminho do HTML gerado")
     args = parser.parse_args()
 
@@ -206,7 +215,7 @@ def main():
 
     print(f"Lendo {caminho} ...")
     try:
-        df = carregar_dados(str(caminho), ABA)
+        df = carregar_dados(str(caminho), args.aba)
     except ValueError as error:
         parser.error(str(error))
     print(f"{len(df)} linhas carregadas.")
