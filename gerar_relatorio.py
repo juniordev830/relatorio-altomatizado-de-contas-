@@ -162,6 +162,7 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Relatório de Dados</title>
 <style>
     body {{ font-family: Arial, sans-serif; margin: 40px; color: #222; background: #f7f7f9; }}
@@ -178,6 +179,16 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
     table.tabela th {{ background: #4C72B0; color: white; }}
     table.tabela td:first-child, table.tabela th:first-child {{ text-align: left; }}
     footer {{ margin-top: 40px; font-size: 12px; color: #999; }}
+    * {{ box-sizing: border-box; }}
+    body {{ max-width: 76rem; margin: auto; padding: clamp(16px, 4vw, 48px); font-family: system-ui, sans-serif; }}
+    .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 12px; }}
+    .card {{ min-width: 0; border-top: 3px solid #285b83; }}
+    .card .valor {{ overflow-wrap: anywhere; font-variant-numeric: tabular-nums; color: #184e71; }}
+    .card .label {{ color: #465667; }}
+    .grafico img {{ display: block; margin-inline: auto; height: auto; }}
+    .table-scroll {{ overflow-x: auto; border-radius: 8px; }}
+    .table-scroll:focus-visible {{ outline: 3px solid #285b83; }}
+    table.tabela tbody tr:nth-child(even) {{ background: #eef4f8; }}
 </style>
 </head>
 <body>
@@ -194,7 +205,7 @@ def montar_html(df: pd.DataFrame, imgs: dict) -> str:
     {blocos_grafico}
 
     <h2>Tabela resumo por {COLUNA_CATEGORIA}</h2>
-    {tabela_resumo}
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Tabela resumo">{tabela_resumo}</div>
 
     <footer>Relatório gerado automaticamente via script Python.</footer>
 </body>
