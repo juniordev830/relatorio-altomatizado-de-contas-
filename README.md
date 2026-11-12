@@ -71,3 +71,7 @@ Confira se a planilha contém os dados esperados antes de gerar o relatório. O 
 - Adicionar mensagens de validação mais detalhadas e exportação em outros formatos.
 
 O arquivo de exemplo contém dados demonstrativos; substitua-o por dados autorizados e evite publicar informações financeiras pessoais ou confidenciais.
+
+## Validação e manutenção
+
+Para revisar alterações neste projeto, consulte o [guia técnico de validação](docs/GUIA_DE_VALIDACAO.md), com comandos, cenários de regressão e próximos incrementos.
