@@ -50,3 +50,22 @@ def test_parse_sheet_selector():
 
     assert gerar_relatorio.parse_aba("2") == 2
     assert gerar_relatorio.parse_aba("Vendas") == "Vendas"
+
+def test_validate_flag_skips_chart_generation_and_file_write(monkeypatch, tmp_path, capsys):
+    import gerar_relatorio
+
+    input_file = tmp_path / "dados.xlsx"
+    input_file.write_bytes(b"teste")
+    output_file = tmp_path / "relatorio.html"
+    frame = pd.DataFrame({"Produto": ["A", "B", "A"], "Total": [10, 20, 30]})
+
+    monkeypatch.setattr(gerar_relatorio, "carregar_dados", lambda *_: frame)
+    monkeypatch.setattr(gerar_relatorio, "grafico_por_categoria",
+                        lambda *_: (_ for _ in ()).throw(AssertionError("Não deveria gerar gráfico")))
+    monkeypatch.setattr(sys, "argv", ["gerar_relatorio.py", str(input_file),
+                                     "--validar", "--saida", str(output_file)])
+
+    gerar_relatorio.main()
+
+    assert not output_file.exists()
+    assert "3 registros e 2 categorias" in capsys.readouterr().out

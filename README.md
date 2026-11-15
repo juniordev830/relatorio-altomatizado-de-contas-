@@ -46,6 +46,16 @@ python gerar_relatorio.py vendas_exemplo.xlsx --saida relatorio.html
 
 Abra o arquivo `relatorio.html` gerado no navegador. Para usar outra planilha, passe o caminho do arquivo como primeiro argumento.
 
+## Validar uma planilha sem gerar relatório
+
+Para conferir as colunas e os dados válidos antes de gerar arquivos:
+
+```bash
+python gerar_relatorio.py vendas_exemplo.xlsx --validar
+```
+
+O comando informa quantas linhas válidas e categorias foram identificadas. Não gera gráficos nem arquivo HTML. Linhas inválidas são descartadas conforme as regras atuais da importação.
+
 ## Configuração das colunas
 
 Os nomes das colunas esperadas estão configurados no início de `gerar_relatorio.py`. Ajuste `COLUNA_DATA`, `COLUNA_CATEGORIA` e `COLUNA_VALOR` para corresponder ao cabeçalho do seu arquivo.

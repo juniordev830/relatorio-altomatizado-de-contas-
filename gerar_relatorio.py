@@ -207,6 +207,7 @@ def main():
     parser.add_argument("arquivo", nargs="?", default=ARQUIVO_ENTRADA, help="Caminho do arquivo .xlsx")
     parser.add_argument("--aba", type=parse_aba, default=ABA, help="Índice (0-based) ou nome da aba")
     parser.add_argument("--saida", default=ARQUIVO_SAIDA, help="Caminho do HTML gerado")
+    parser.add_argument("--validar", action="store_true", help="Valida a planilha sem gerar gráficos ou HTML")
     args = parser.parse_args()
 
     caminho = Path(args.arquivo)
@@ -219,6 +220,9 @@ def main():
     except ValueError as error:
         parser.error(str(error))
     print(f"{len(df)} linhas carregadas.")
+    if args.validar:
+        print(f"Planilha válida: {len(df)} registros e {df[COLUNA_CATEGORIA].nunique()} categorias.")
+        return
 
     print("Gerando gráficos...")
     imgs = {
