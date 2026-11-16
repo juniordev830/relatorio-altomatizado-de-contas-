@@ -1,0 +1,8 @@
+source("labs/r/expense_summary.R")
+data <- data.frame(category = c("energia", "agua", "energia"), amount = c(20, 10, 30))
+result <- summarize_expenses(data)
+stopifnot(nrow(result) == 2, result$category[[1]] == "energia", result$total[[1]] == 50)
+stopifnot(nrow(summarize_expenses(data.frame(category=character(),amount=numeric()))) == 0)
+bad <- data.frame(category = "energia", amount = -2)
+stopifnot(inherits(try(summarize_expenses(bad), silent = TRUE), "try-error"))
+cat("R expense checks passed\n")
