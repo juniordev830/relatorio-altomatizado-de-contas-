@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import subprocess
 
 import pandas as pd
 
@@ -69,3 +70,27 @@ def test_validate_flag_skips_chart_generation_and_file_write(monkeypatch, tmp_pa
 
     assert not output_file.exists()
     assert "3 registros e 2 categorias" in capsys.readouterr().out
+
+
+def test_cli_preserves_excel_file_when_output_points_to_input(tmp_path):
+    source = tmp_path / "dados.xlsx"
+    pd.DataFrame({"Produto": ["A"], "Total": [10]}).to_excel(source, index=False)
+    original = source.read_bytes()
+    alias = tmp_path / "relatorio.html"
+    alias.hardlink_to(source)
+    script = Path(__file__).resolve().parents[1] / "gerar_relatorio.py"
+
+    result = subprocess.run(
+        [sys.executable, str(script), str(source), "--saida", str(alias)],
+        capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 2
+    assert "diferente da planilha" in result.stderr
+    assert source.read_bytes() == original
+
+    result = subprocess.run(
+        [sys.executable, str(script), str(source), "--saida", str(source), "--validar"],
+        capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert source.read_bytes() == original
