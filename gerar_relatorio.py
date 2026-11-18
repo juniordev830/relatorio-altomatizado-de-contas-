@@ -25,6 +25,7 @@ matplotlib.use("Agg")  # não precisa de interface gráfica
 import matplotlib.pyplot as plt
 from pathlib import Path
 from datetime import datetime
+from zipfile import BadZipFile
 import base64
 from io import BytesIO
 
@@ -211,13 +212,16 @@ def main():
     args = parser.parse_args()
 
     caminho = Path(args.arquivo)
+    saida = Path(args.saida)
     if not caminho.exists():
         parser.error(f"Arquivo não encontrado: {caminho}")
 
-    print(f"Lendo {caminho} ...")
     try:
+        if not args.validar and saida.exists() and saida.samefile(caminho):
+            parser.error("O arquivo de saída deve ser diferente da planilha de entrada.")
+        print(f"Lendo {caminho} ...")
         df = carregar_dados(str(caminho), args.aba)
-    except ValueError as error:
+    except (ValueError, OSError, BadZipFile) as error:
         parser.error(str(error))
     print(f"{len(df)} linhas carregadas.")
     if args.validar:
@@ -234,7 +238,10 @@ def main():
     print("Montando relatório...")
     html = montar_html(df, imgs)
 
-    Path(args.saida).write_text(html, encoding="utf-8")
+    try:
+        saida.write_text(html, encoding="utf-8")
+    except OSError as error:
+        parser.error(str(error))
     print(f"Relatório salvo em: {args.saida}")
 
 
