@@ -1,5 +1,7 @@
 # Relatório Automatizado de Contas
 
+**Navegação** · [Funcionalidades](#funcionalidades) · [Requisitos](#requisitos) · [Instalação](#instalação) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 Aplicação Python que gera um relatório HTML com indicadores, gráficos e uma tabela-resumo a partir de uma planilha Excel (.xlsx).
 
 ## Funcionalidades
@@ -85,3 +87,9 @@ O arquivo de exemplo contém dados demonstrativos; substitua-o por dados autoriz
 ## Validação e manutenção
 
 Para revisar alterações neste projeto, consulte o [guia técnico de validação](docs/GUIA_DE_VALIDACAO.md), com comandos, cenários de regressão e próximos incrementos.
+
+## Código e roteiro de estudo
+
+Onde incluiria a validação de uma coluna monetária sem acoplar a regra ao HTML? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
